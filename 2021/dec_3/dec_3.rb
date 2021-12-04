@@ -5,11 +5,12 @@ class PowerConsumptionMonitor
               :co2_scrubber_rating
 
   def initialize(readings)
-    @gamma_rate = "" # this is actually a binary number, but make it a string for now
-    @epsilon_rate = "" # this is actually a binary number, but make it a string for now
+    @gamma_rate = ""
+    @epsilon_rate = ""
     @readings = readings.split(/\n/)
     find_gamma_rate
     find_epsilon_rate
+    
     @oxygen_generator_rating = ""
     @co2_scrubber_rating = ""
     find_oxygen_generator_rating
@@ -17,7 +18,7 @@ class PowerConsumptionMonitor
   end
 
   def find_gamma_rate
-    collector = []
+    collector = Array.new([])
     @readings.each do |reading|
       reading.split('').each_with_index do |digit, i|
         if !collector[i]
@@ -27,10 +28,9 @@ class PowerConsumptionMonitor
         end
       end
     end
-    collector.each do |digits|
-      most_common_digit = digits.max_by { |i| digits.count(i) }
-      @gamma_rate << most_common_digit
-    end
+    @gamma_rate = collector.map do |digits|
+      digits.max_by { |i| digits.count(i) }
+    end.join('')
   end
 
   def find_epsilon_rate
@@ -44,7 +44,7 @@ class PowerConsumptionMonitor
   def find_oxygen_generator_rating
     filtered_readings = @readings
     i = 0
-    while filtered_readings.length > 1 && i <= filtered_readings[0].length do
+    while filtered_readings.length > 1 do
       digits = filtered_readings.map {|r| r[i] }
       zeros = digits.select {|d| d == "0"}.length
       ones = digits.select {|d| d == "1"}.length
@@ -62,7 +62,7 @@ class PowerConsumptionMonitor
   def find_co2_scrubber_rating
     filtered_readings = @readings
     i = 0
-    while filtered_readings.length > 1 && i <= filtered_readings[0].length do
+    while filtered_readings.length > 1 do
       digits = filtered_readings.map {|r| r[i] }
       zeros = digits.select {|d| d == "0"}.length
       ones = digits.select {|d| d == "1"}.length
